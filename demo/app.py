@@ -12,10 +12,14 @@ sample = df[["name", "url"]].sample(25)
 
 st.set_page_config(
     page_title="Climate Pledges",
-    page_icon="🪼",
+    page_icon="🌎",
 )
 
-st.title("🪼 Analyzing Company's Environmental Commitments")
+# Initialize the LLM & Embeddings n_ctx=3584,
+with st.spinner("Loading LLM"):
+    embeddings, llm = utils.define_embeddings_llm()
+
+st.title("🌎 Analyzing Company's Environmental Commitments")
 st.subheader("1. Get text:")
 url = st.text_input(
     "Provide a URL from a Climate Pledge:",
@@ -26,9 +30,7 @@ with st.expander("Show more example urls:"):
     st.dataframe(sample)
 
 
-# Initialize the LLM & Embeddings n_ctx=3584,
-with st.spinner("Loading LLM"):
-    embeddings, llm = utils.define_embeddings_llm()
+
 
 response_schemas = [
     ResponseSchema(name="answer", description="Yes or No as answer of user question."),
@@ -63,7 +65,7 @@ if url:
     st.success(f"Embeddings created successfully.")
     st.subheader("3. Narrow Context:")
     question = st.text_input(
-        "Enter a question to reduce text:",
+        "Enter a question:",
         value="Has the company made a commitment to reduce Scope 1, 2 or 3 emissions?",
     )
     if question:
