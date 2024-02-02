@@ -15,20 +15,20 @@ st.set_page_config(
     page_icon="🪼",
 )
 
-
 st.title("🪼 Analyzing Company's Environmental Commitments")
-st.header("1. Get text:")
+st.subheader("1. Get text:")
 url = st.text_input(
     "Provide a URL from a Climate Pledge:",
     value="https://www.adyen.com/social-responsibility/climate#neutral",
 )
-with st.expander("Show more urls:"):
+st.caption("*Supported files: HTML and PDF")
+with st.expander("Show more example urls:"):
     st.dataframe(sample)
 
-st.caption("Supported files: HTML and PDF")
-# Initialize the LLM & Embeddings n_ctx=3584,
 
-embeddings, llm = utils.define_embeddings_llm()
+# Initialize the LLM & Embeddings n_ctx=3584,
+with st.spinner("Loading LLM"):
+    embeddings, llm = utils.define_embeddings_llm()
 
 response_schemas = [
     ResponseSchema(name="answer", description="Yes or No as answer of user question."),
@@ -41,12 +41,18 @@ response_schemas = [
 output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
 format_instructions = output_parser.get_format_instructions()
 
+
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+
+
 if url:
     # Split
     with st.spinner("Loading text from document..."):
         extracted_text = utils.load_text_from_url(url)
     st.success(f"Your document had been loaded.")
 
+    st.subheader("2. Create Embeddings:")
     with st.spinner("Creating embeddings..."):
         vectordb = FAISS.from_documents(
             documents=utils.split_text(
@@ -54,7 +60,8 @@ if url:
             ),
             embedding=embeddings,
         )
-
+    st.success(f"Embeddings created successfully.")
+    st.subheader("3. Narrow Context:")
     question = st.text_input(
         "Enter a question to reduce text:",
         value="Has the company made a commitment to reduce Scope 1, 2 or 3 emissions?",
@@ -65,9 +72,11 @@ if url:
             retriever_from_llm = MultiQueryRetriever.from_llm(
                 retriever=vectordb.as_retriever(), llm=llm
             )
-            results = retriever_from_llm.get_relevant_documents(question, k=3)
-            st.write(f"Found len(relevant_chunks) relevant chunks")
-
+            results = retriever_from_llm.get_relevant_documents(question)
+            st.write(f"Found {len(results )} relevant chunks")
+            with st.expander("Show relevant chunks:"):
+                st.write(format_docs(results))
+        st.subheader("4. Create an answer:")
         with st.spinner("Creating an answer..."):
             generic_prompt = PromptTemplate(
                 input_variables=["context", "question"],
@@ -85,9 +94,6 @@ if url:
                 },
                 output_parser=output_parser,
             )
-
-            def format_docs(docs):
-                return "\n\n".join(doc.page_content for doc in docs)
 
             chain = generic_prompt | llm
             parsed_chain = output_parser_prompt | llm

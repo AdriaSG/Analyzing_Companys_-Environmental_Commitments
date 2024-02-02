@@ -115,6 +115,7 @@ def load_pdf(url):
         results = basic_cleaning(
             "\n".join([page.page_content for page in PyPDFLoader(url).load()])
         )
+        print(type(results))
     except Exception as e:
         error_message = f"Error: {str(e)}"
         print(error_message)
