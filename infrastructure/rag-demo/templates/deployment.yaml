@@ -32,7 +32,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 8501
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
             - name: HUGGINGFACE_TOKEN
@@ -51,11 +51,11 @@ spec:
           livenessProbe:
             httpGet:
               path: /
-              port: http
+              port: {{ .Values.service.port }}
           readinessProbe:
             httpGet:
               path: /
-              port: http
+              port: {{ .Values.service.port }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       priorityClassName: important

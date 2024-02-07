@@ -26,7 +26,21 @@ securityContext: {}
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
+service:
+  type: ClusterIP
+  port: 8501
 
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    kubernetes.io/ingress.class: nginx
+  hosts:
+    - host: rag.demo.calgo-lab.de
+  tls:
+    - secretName: rag-subdomain-tls-pvc
+      hosts:
+        - rag.demo.calgo-lab.de
 resources:
     limits:
       nvidia.com/gpu: 1 # requesting 1 GPU}
@@ -41,7 +55,7 @@ resources:
       #memory: 8Gi
 
 nodeSelector:
-        gpu: a100
+        gpu: p100
 
 tolerations: []
 
