@@ -5,12 +5,22 @@ import streamlit as st
 import torch
 import transformers
 from bs4 import BeautifulSoup
+import subprocess
 from transformers import AutoTokenizer
 
 from langchain.document_loaders import PyPDFLoader
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.llms import HuggingFacePipeline
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+
+# Log-in HuggingFace
+def huggingface_login(token):
+    try:
+        subprocess.run(["huggingface-cli", "login", "--token", token], check=True)
+        print("Logged in successfully to Hugging Face with the provided token.")
+    except subprocess.CalledProcessError as e:
+        print(f"Error: {e}")
 
 
 # Extraction
@@ -145,7 +155,7 @@ def define_embeddings_llm():
     A method to define embeddings and the LLM to use. LLM must be a chat version to work with RAG later on.
     """
     model_name = "climatebert/distilroberta-base-climate-f"
-    model_kwargs = {"device": "local"}  # Value must be changes to 'local'
+    model_kwargs = {"device": "cpu"}  # Change to 'cpu'
     encode_kwargs = {"normalize_embeddings": False}
 
     embeddings = HuggingFaceEmbeddings(
@@ -160,7 +170,7 @@ def define_embeddings_llm():
         tokenizer=tokenizer,
         torch_dtype=torch.bfloat16,
         trust_remote_code=True,
-        device_map=0,  # Set to 'cpu' for running on CPU, 'auto' is also valid
+        device_map="cpu",  # Set to 'cpu' for running on CPU, 'auto' is also valid
         max_length=4096,  # max_model capacity
         do_sample=True,
         top_k=10,
