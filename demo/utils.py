@@ -145,7 +145,7 @@ def define_embeddings_llm():
     A method to define embeddings and the LLM to use. LLM must be a chat version to work with RAG later on.
     """
     model_name = "climatebert/distilroberta-base-climate-f"
-    model_kwargs = {"device": "cuda"}  # Value must be changes to 'local'
+    model_kwargs = {"device": "local"}  # Value must be changes to 'local'
     encode_kwargs = {"normalize_embeddings": False}
 
     embeddings = HuggingFaceEmbeddings(
