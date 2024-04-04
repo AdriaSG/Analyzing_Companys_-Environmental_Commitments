@@ -1,14 +1,18 @@
 import pandas as pd
 import streamlit as st
 import utils
+import os
 
 from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain.prompts import PromptTemplate
 from langchain.retrievers.multi_query import MultiQueryRetriever
 from langchain.vectorstores import FAISS
 
-df = pd.read_csv("extracted_text_verified_urls_2023_labeled_07.10.23.csv")
-sample = df[["name", "url"]].sample(25)
+df = pd.read_csv("demo/companies_and_urls_07.10.23.csv")
+sample = df.sample(25)
+
+huggingface_token = os.environ.get("HUGGINGFACE_TOKEN")
+utils.huggingface_login("HUGGINGFACE_TOKEN")
 
 st.set_page_config(
     page_title="Climate Pledges",
