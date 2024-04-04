@@ -12,7 +12,7 @@ df = pd.read_csv("demo/companies_and_urls_07.10.23.csv")
 sample = df.sample(25)
 
 huggingface_token = os.environ.get("HUGGINGFACE_TOKEN")
-utils.huggingface_login("HUGGINGFACE_TOKEN")
+utils.huggingface_login(huggingface_token)
 
 st.set_page_config(
     page_title="Climate Pledges",
