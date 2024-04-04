@@ -167,7 +167,7 @@ def define_embeddings_llm():
         "text-generation",
         model=model,
         tokenizer=tokenizer,
-        #torch_dtype=torch.bfloat16,
+        torch_dtype=torch.bfloat16,
         trust_remote_code=True,
         device_map="cpu",  # Set to 'cpu' for running on CPU, 'auto' is also valid
         max_length=4096,  # max_model capacity
