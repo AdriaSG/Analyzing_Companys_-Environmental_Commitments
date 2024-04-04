@@ -5,6 +5,7 @@ import streamlit as st
 import transformers
 from bs4 import BeautifulSoup
 import subprocess
+import torch
 from transformers import AutoTokenizer
 
 from langchain.document_loaders import PyPDFLoader
