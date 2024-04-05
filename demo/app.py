@@ -5,8 +5,8 @@ import os
 
 from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain.prompts import PromptTemplate
-from langchain.retrievers.multi_query import MultiQueryRetriever
 from langchain.vectorstores import FAISS
+
 
 df = pd.read_csv("demo/companies_and_urls_07.10.23.csv")
 sample = df.sample(25)
@@ -61,11 +61,11 @@ if url:
     st.subheader("2. Create Embeddings:")
     with st.spinner("Creating embeddings..."):
         vectordb = FAISS.from_documents(
-            documents=utils.split_text(
-                extracted_text, chunk_size=440, chunk_overlap=25
-            ),
-            embedding=embeddings,
-        )
+                documents=utils.split_text(
+                    extracted_text, chunk_size=440, chunk_overlap=25
+                ),
+                embedding=embeddings,
+            )
     st.success(f"Embeddings created successfully.")
     st.subheader("3. Narrow Context:")
     question = st.text_input(
@@ -74,14 +74,11 @@ if url:
     )
     if question:
         with st.spinner("Getting relevant document chunks to the query."):
-            # Retriever A:
-            retriever_from_llm = MultiQueryRetriever.from_llm(
-                retriever=vectordb.as_retriever(), llm=llm
-            )
-            results = retriever_from_llm.get_relevant_documents(question)
+            results = vectordb.similarity_search(question)
             st.write(f"Found {len(results )} relevant chunks")
             with st.expander("Show relevant chunks:"):
                 st.write(format_docs(results))
+
         st.subheader("4. Create an answer:")
         with st.spinner("Creating an answer..."):
             generic_prompt = PromptTemplate(
