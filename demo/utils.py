@@ -6,10 +6,11 @@ import transformers
 from bs4 import BeautifulSoup
 import subprocess
 import torch
+import os
 from transformers import AutoTokenizer
 
 from langchain.document_loaders import PyPDFLoader
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
 from langchain.llms import HuggingFacePipeline
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
@@ -154,12 +155,9 @@ def define_embeddings_llm():
     """
     A method to define embeddings and the LLM to use. LLM must be a chat version to work with RAG later on.
     """
-    model_name = "climatebert/distilroberta-base-climate-f"
-    model_kwargs = {"device": "cpu"}  # Change to 'cpu'
-    encode_kwargs = {"normalize_embeddings": False}
 
-    embeddings = HuggingFaceEmbeddings(
-        model_name=model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
+    embeddings = HuggingFaceInferenceAPIEmbeddings(
+        api_key=os.environ.get("HUGGINGFACE_TOKEN"), model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
 
     model = "meta-llama/Llama-2-7b-chat-hf"
