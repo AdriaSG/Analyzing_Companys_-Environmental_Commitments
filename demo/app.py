@@ -5,13 +5,13 @@ import os
 
 from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain.prompts import PromptTemplate
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 
 
 df = pd.read_csv("demo/companies_and_urls_07.10.23.csv")
 sample = df.sample(25)
 
-huggingface_token = os.environ.get("HUGGINGFACE_TOKEN")
+huggingface_token = os.environ.get('HUGGINGFACE_TOKEN')
 utils.huggingface_login(huggingface_token)
 
 st.set_page_config(
@@ -21,7 +21,7 @@ st.set_page_config(
 
 # Initialize the LLM & Embeddings n_ctx=3584,
 with st.spinner("Loading LLM"):
-    embeddings, llm = utils.define_embeddings_llm()
+    embeddings, llm = utils.define_embeddings_llm(huggingface_token)
 
 st.title("🌎 Analyzing Company's Environmental Commitments")
 st.subheader("1. Get text:")

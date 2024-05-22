@@ -11,7 +11,7 @@ from transformers import AutoTokenizer
 
 from langchain.document_loaders import PyPDFLoader
 from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
-from langchain.llms import HuggingFacePipeline
+from langchain_community.llms import HuggingFacePipeline
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
@@ -151,13 +151,13 @@ def load_text_from_url(url):
 
 # Chain
 @st.cache_resource
-def define_embeddings_llm():
+def define_embeddings_llm(huggingface_token):
     """
     A method to define embeddings and the LLM to use. LLM must be a chat version to work with RAG later on.
     """
 
     embeddings = HuggingFaceInferenceAPIEmbeddings(
-        api_key=os.environ.get("HUGGINGFACE_TOKEN"), model_name="sentence-transformers/all-MiniLM-L6-v2"
+        api_key=huggingface_token, model_name="sentence-transformers/all-MiniLM-L6-v2"
     )
 
     model = "meta-llama/Llama-2-7b-chat-hf"
@@ -166,9 +166,9 @@ def define_embeddings_llm():
         "text-generation",
         model=model,
         tokenizer=tokenizer,
-        torch_dtype=torch.bfloat16,
+        #torch_dtype=torch.bfloat16,
         trust_remote_code=True,
-        device_map="cpu",  # Set to 'cpu' for running on CPU, 'auto' is also valid
+        device_map="auto",  # Set to 'cpu' for running on CPU, 'auto' is also valid
         max_length=4096,  # max_model capacity
         do_sample=True,
         top_k=10,
